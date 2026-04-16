@@ -1,0 +1,14 @@
+<model-viewer src="EC 100 Bronze Brittany.fbx.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1.78" auto-rotate environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" shadow-softness="1" exposure="2">
+    <button class="Hotspot" slot="hotspot-2" data-position="-14.92499325703239m 16.612660808246034m 0.021520734079551573m" data-normal="-0.001989244233239762m 0m -0.999998021451733m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">EC-100</div>
+    </button>
+    <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+    </div>
+    <button slot="ar-button" id="ar-button">
+        View in your space
+    </button>
+    <div id="ar-prompt">
+        <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+    </div>
+</model-viewer>
