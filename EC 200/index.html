@@ -101,3 +101,137 @@
         }
         #ar-button:hover {
             background-color: #F8F9FA;
+        }
+        #ar-button:active {
+            background-color: #E8EAED;
+        }
+        #ar-button:focus {
+            outline: none;
+        }
+        #ar-button:focus-visible {
+            outline: 1px solid #4285f4;
+        }
+        #ar-prompt {
+            position: absolute;
+            left: 50%;
+            bottom: 56px;
+            transform: translateX(-50%);
+            z-index: 1;
+            white-space: nowrap;
+            border-radius: 4px;
+            padding: 6px 8px 6px 8px;
+            background-color: #303030;
+            color: #fff;
+            font-family: Roboto, sans-serif;
+            font-size: 14px;
+            min-width: 120px;
+            text-align: center;
+        }
+        #ar-prompt.hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Animated Window Viewer</h1>
+
+    <model-viewer
+        id="animatedWindow"
+        src="EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.fbx.glb"
+        alt="Animated Window"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        tone-mapping="neutral"
+        poster="poster.webp" <!-- Added poster -->
+        shadow-intensity="1"
+        environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" <!-- Custom environment -->
+        exposure="2" <!-- Custom exposure -->
+        animation-name="Window_OPEN" <!-- Explicitly set animation name -->
+        orientation="0 0 0" <!-- Default orientation if not specified otherwise -->
+        field-of-view="30deg" <!-- Specific FOV from original -->
+        camera-orbit="27.61deg 86.84deg 2.14m" <!-- Specific initial camera position -->
+        camera-target="0.00m 1.00m -0.01m" <!-- Specific camera target -->
+        autoplay="false" <!-- Ensure it's not autoplaying to allow slider control -->
+        loop="true" <!-- Ensure animation loops for smooth slider experience -->
+    >
+        <!-- AR button slot - assuming ar_icon.png and ar_hand_prompt.png are in the same folder -->
+        <button slot="ar-button" id="ar-button">
+            View in your space
+        </button>
+        <div id="ar-prompt" class="hide"> <!-- Initially hide AR prompt -->
+            <img src="ar_hand_prompt.png">
+        </div>
+    </model-viewer>  
+
+    <div class="controls">
+        <label for="animation-slider">Open-Close</label>
+        <input type="range" id="animation-slider" min="0" max="1" value="0" step="any">
+    </div>
+
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <script>
+        const modelViewer = document.getElementById('animatedWindow');
+        const slider = document.getElementById('animation-slider');
+        const arButton = document.getElementById('ar-button');
+        const arPrompt = document.getElementById('ar-prompt');
+
+        // Initial setup
+        modelViewer.autoplay = false;
+        modelViewer.currentTime = 0; // Ensure it starts at the beginning (closed)
+
+        // Event listener for the slider
+        slider.addEventListener('input', () => {
+            if (modelViewer.duration) {
+                modelViewer.currentTime = slider.value * modelViewer.duration;
+            } else {
+                console.warn("modelViewer.duration is not yet available for slider control.");
+            }
+        });
+
+        // Event listener for model loading
+        modelViewer.addEventListener('load', () => {
+            console.log('Model loaded. Duration:', modelViewer.duration);
+            console.log('Available animations:', modelViewer.availableAnimations);
+
+            // Set initial state after load
+            modelViewer.currentTime = 0;
+            slider.value = 0;
+
+            // Ensure the animation-name is correctly set, fallback if needed
+            if (!modelViewer.animationName && modelViewer.availableAnimations && modelViewer.availableAnimations.length > 0) {
+                modelViewer.animationName = modelViewer.availableAnimations[0];
+                console.warn(`'animation-name' was not explicitly set or 'Window_OPEN' not found. Using first available animation: ${modelViewer.animationName}`);
+            } else if (!modelViewer.animationName) {
+                 console.warn("No animation-name set and no available animations found.");
+            }
+        });
+
+        // AR button functionality (copied from typical model-viewer script.js)
+        if (arButton) {
+            arButton.addEventListener('click', () => {
+                modelViewer.activateAR();
+            });
+        }
+        
+        // AR prompt functionality (copied from typical model-viewer script.js)
+        modelViewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'session-started') {
+                arPrompt.classList.add('hide');
+            }
+        });
+        modelViewer.addEventListener('quick-look-button-tapped', () => {
+            arPrompt.classList.add('hide');
+        });
+
+        // Show prompt if AR is available
+        modelViewer.addEventListener('data-ready', () => {
+            if (modelViewer.canActivateAR) {
+                arPrompt.classList.remove('hide');
+            }
+        });
+    </script>
+</body>
+</html>
