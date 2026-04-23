@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EC 200 3D Model</title>
+    <title>EC 200 3D Model Viewer</title>
     <!-- Model Viewer Library -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
+        /* Basic styling to ensure the model-viewer takes up the full space when embedded */
         body {
             margin: 0;
             padding: 0;
             overflow: hidden; /* Prevent scrollbars if content is larger than iframe */
             height: 100vh; /* Make body take full height of the viewport */
             width: 100vw; /* Make body take full width of the viewport */
+            display: flex; /* Use flexbox to ensure model-viewer fills the container */
+            justify-content: center;
+            align-items: center;
         }
         model-viewer {
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
+            width: 100%; /* Take full width of the body */
+            height: 100%; /* Take full height of the body */
+            background-color: transparent; /* Keep background transparent */
         }
     </style>
 </head>
 <body>
+    <!-- 3D Model Viewer -->
     <model-viewer
       src="EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.glb"
       alt="EC 200 White Colonial Grid Window"
@@ -29,7 +34,12 @@
       auto-rotate
       camera-controls
       shadow-intensity="1"
-      exposure="1">
+      exposure="1"
+      environment-image="neutral"
+      loading="eager"
+      camera-orbit="0deg 90deg 1m"
+      field-of-view="auto"
+      disable-zoom>
     </model-viewer>
 </body>
 </html>
