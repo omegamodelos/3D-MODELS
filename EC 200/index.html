@@ -25,10 +25,12 @@
         model-viewer {
             width: 600px;
             height: 600px;
-            background-color: #fff; /* White background for the viewer */
+            background-color: #fff; /* White background for the viewer area */
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Stronger shadow */
+            
+            /* Custom styling for model-viewer's internal elements */
             --mv-progress-bar-color: #4CAF50; /* Green progress bar */
             --mv-progress-bar-height: 5px;
             --mv-progress-bar-border-radius: 5px;
@@ -43,7 +45,7 @@
         input[type="range"] {
             width: 500px;
             margin-bottom: 15px;
-            -webkit-appearance: none; /* Remove default styling */
+            -webkit-appearance: none; /* Remove default browser styling */
             appearance: none;
             height: 8px;
             background: #d3d3d3;
@@ -79,7 +81,7 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
-        /* Styles for AR button and prompt - copied from original */
+        /* Styles for AR button and prompt - based on typical model-viewer output */
         #ar-button {
             background-image: url("ar_icon.png"); /* Assuming ar_icon.png is in the same folder */
             background-repeat: no-repeat;
@@ -98,6 +100,7 @@
             line-height: 36px;
             border-radius: 18px;
             border: 1px solid #DADCE0;
+            cursor: pointer; /* Indicate it's clickable */
         }
         #ar-button:hover {
             background-color: #F8F9FA;
@@ -143,17 +146,18 @@
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         tone-mapping="neutral"
-        poster="poster.webp" <!-- Added poster -->
+        poster="poster.webp" 
         shadow-intensity="1"
-        environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" <!-- Custom environment -->
-        exposure="2" <!-- Custom exposure -->
-        animation-name="Window_OPEN" <!-- Explicitly set animation name -->
-        orientation="0 0 0" <!-- Default orientation if not specified otherwise -->
-        field-of-view="30deg" <!-- Specific FOV from original -->
-        camera-orbit="27.61deg 86.84deg 2.14m" <!-- Specific initial camera position -->
-        camera-target="0.00m 1.00m -0.01m" <!-- Specific camera target -->
-        autoplay="false" <!-- Ensure it's not autoplaying to allow slider control -->
-        loop="true" <!-- Ensure animation loops for smooth slider experience -->
+        environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" 
+        skybox-color="#FFFFFF" <!-- This makes the background white, preventing environment-image from being visible -->
+        exposure="2" 
+        animation-name="Window_OPEN" <!-- The intended animation name -->
+        orientation="0 0 0" 
+        field-of-view="30deg" 
+        camera-orbit="27.61deg 86.84deg 2.14m" 
+        camera-target="0.00m 1.00m -0.01m" 
+        autoplay="false" 
+        loop="true" 
     >
         <!-- AR button slot - assuming ar_icon.png and ar_hand_prompt.png are in the same folder -->
         <button slot="ar-button" id="ar-button">
@@ -182,41 +186,51 @@
         modelViewer.autoplay = false;
         modelViewer.currentTime = 0; // Ensure it starts at the beginning (closed)
 
+        // Function to handle animation name assignment after model loads
+        function setupAnimation() {
+            if (modelViewer.availableAnimations && modelViewer.availableAnimations.length > 0) {
+                if (modelViewer.availableAnimations.includes('Window_OPEN')) {
+                    modelViewer.animationName = 'Window_OPEN';
+                    console.log("Animation 'Window_OPEN' found and set.");
+                } else {
+                    // Fallback to the first available animation if 'Window_OPEN' is not found
+                    modelViewer.animationName = modelViewer.availableAnimations[0];
+                    console.warn(`'Window_OPEN' animation not found. Using the first available animation: '${modelViewer.animationName}'`);
+                }
+                console.log('Model duration for active animation:', modelViewer.duration);
+            } else {
+                console.warn("No animations found in the model, or model not yet loaded.");
+            }
+        }
+
         // Event listener for the slider
         slider.addEventListener('input', () => {
             if (modelViewer.duration) {
                 modelViewer.currentTime = slider.value * modelViewer.duration;
             } else {
-                console.warn("modelViewer.duration is not yet available for slider control.");
+                console.warn("modelViewer.duration is not yet available for slider control. Is an animation loaded?");
             }
         });
 
         // Event listener for model loading
         modelViewer.addEventListener('load', () => {
-            console.log('Model loaded. Duration:', modelViewer.duration);
-            console.log('Available animations:', modelViewer.availableAnimations);
+            console.log('Model loaded.');
+            console.log('All available animations:', modelViewer.availableAnimations); // Crucial: Check your browser's console for this output
 
-            // Set initial state after load
-            modelViewer.currentTime = 0;
-            slider.value = 0;
+            setupAnimation(); // Set animation name after model loads
 
-            // Ensure the animation-name is correctly set, fallback if needed
-            if (!modelViewer.animationName && modelViewer.availableAnimations && modelViewer.availableAnimations.length > 0) {
-                modelViewer.animationName = modelViewer.availableAnimations[0];
-                console.warn(`'animation-name' was not explicitly set or 'Window_OPEN' not found. Using first available animation: ${modelViewer.animationName}`);
-            } else if (!modelViewer.animationName) {
-                 console.warn("No animation-name set and no available animations found.");
-            }
+            modelViewer.currentTime = 0; // Reset to start
+            slider.value = 0; // Reset slider
         });
 
-        // AR button functionality (copied from typical model-viewer script.js)
+        // AR button functionality (from typical model-viewer script.js)
         if (arButton) {
             arButton.addEventListener('click', () => {
                 modelViewer.activateAR();
             });
         }
         
-        // AR prompt functionality (copied from typical model-viewer script.js)
+        // AR prompt functionality (from typical model-viewer script.js)
         modelViewer.addEventListener('ar-status', (event) => {
             if (event.detail.status === 'session-started') {
                 arPrompt.classList.add('hide');
