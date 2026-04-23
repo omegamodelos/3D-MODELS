@@ -149,9 +149,9 @@
         poster="poster.webp" 
         shadow-intensity="1"
         environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" 
-        skybox-color="#FFFFFF" <!-- This makes the background white, preventing environment-image from being visible -->
+        skybox-color="#FFFFFF" <!-- Makes the background white, preventing environment-image from being visible -->
         exposure="2" 
-        animation-name="Window_OPEN" <!-- The intended animation name -->
+        animation-name="Take 001" <!-- Set directly to the discovered animation name -->
         orientation="0 0 0" 
         field-of-view="30deg" 
         camera-orbit="27.61deg 86.84deg 2.14m" 
@@ -186,41 +186,29 @@
         modelViewer.autoplay = false;
         modelViewer.currentTime = 0; // Ensure it starts at the beginning (closed)
 
-        // Function to handle animation name assignment after model loads
-        function setupAnimation() {
-            if (modelViewer.availableAnimations && modelViewer.availableAnimations.length > 0) {
-                if (modelViewer.availableAnimations.includes('Window_OPEN')) {
-                    modelViewer.animationName = 'Window_OPEN';
-                    console.log("Animation 'Window_OPEN' found and set.");
-                } else {
-                    // Fallback to the first available animation if 'Window_OPEN' is not found
-                    modelViewer.animationName = modelViewer.availableAnimations[0];
-                    console.warn(`'Window_OPEN' animation not found. Using the first available animation: '${modelViewer.animationName}'`);
-                }
-                console.log('Model duration for active animation:', modelViewer.duration);
-            } else {
-                console.warn("No animations found in the model, or model not yet loaded.");
-            }
-        }
-
         // Event listener for the slider
         slider.addEventListener('input', () => {
             if (modelViewer.duration) {
                 modelViewer.currentTime = slider.value * modelViewer.duration;
             } else {
-                console.warn("modelViewer.duration is not yet available for slider control. Is an animation loaded?");
+                console.warn("modelViewer.duration is not yet available for slider control. Ensure an animation is loaded.");
             }
         });
 
         // Event listener for model loading
         modelViewer.addEventListener('load', () => {
             console.log('Model loaded.');
-            console.log('All available animations:', modelViewer.availableAnimations); // Crucial: Check your browser's console for this output
+            console.log('All available animations:', modelViewer.availableAnimations); // Check your browser's console for this output
+            console.log('Active animation name:', modelViewer.animationName); // Should be "Take 001" now
 
-            setupAnimation(); // Set animation name after model loads
-
-            modelViewer.currentTime = 0; // Reset to start
-            slider.value = 0; // Reset slider
+            if (modelViewer.duration) {
+                console.log('Model duration for active animation:', modelViewer.duration);
+                // Reset to start and slider value if duration is available
+                modelViewer.currentTime = 0; 
+                slider.value = 0; 
+            } else {
+                console.error("Animation loaded but has a duration of 0. Please verify the animation in your 3D software and re-export the GLB.");
+            }
         });
 
         // AR button functionality (from typical model-viewer script.js)
