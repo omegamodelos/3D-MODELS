@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Window Viewer</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        model-viewer {
+            width: 600px;
+            height: 600px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="range"] {
+            width: 500px;
+            margin-bottom: 10px;
+        }
+        label {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Animated Window Viewer</h1>
+
+    <model-viewer
+        id="animatedWindow"
+        src="https://github.com/omegamodelos/3D-MODELS/raw/main/EC%20100%20Britany/EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.fbx.glb"
+        alt="Animated Window"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        shadow-intensity="1"
+        autoplay
+        animation-name="Window_OPEN"
+        orientation="0 0 0"
+        field-of-view="auto"
+        max-camera-orbit="auto"
+        min-camera-orbit="auto"
+        environment-image="neutral"
+        exposure="1"
+        skybox-image="https://modelviewer.dev/shared-assets/environments/lightroom_14b.hdr"
+        tone-mapping="neutral"
+        
+    ></model-viewer>
+
+    <div class="controls">
+        <label for="animation-slider">Open-Close</label>
+        <input type="range" id="animation-slider" min="0" max="1" value="0" step="any">
+    </div>
+
+    <script>
+        const modelViewer = document.getElementById('animatedWindow');
+        const slider = document.getElementById('animation-slider');
+
+        // Set the animation name. You might need to inspect the GLB to confirm the exact animation clip name.
+        // Often, the default animation is '0', or it has a descriptive name.
+        // For this model, I'm assuming 'Window_OPEN' based on common naming conventions,
+        // but you might need to adjust this if it's different.
+        modelViewer.animationName = 'Window_OPEN'; 
+        
+        // Disable autoplay for manual control
+        modelViewer.autoplay = false;
+
+        // Set the initial animation time to 0 to ensure it starts closed
+        modelViewer.currentTime = 0;
+
+        slider.addEventListener('input', () => {
+            // Check if modelViewer.duration is available before using it
+            if (modelViewer.duration) {
+                modelViewer.currentTime = slider.value * modelViewer.duration;
+            } else {
+                console.warn("modelViewer.duration is not yet available. Waiting for model to load.");
+            }
+        });
+
+        // Ensure the model is loaded before trying to access its duration
+        modelViewer.addEventListener('load', () => {
+            console.log('Model loaded. Duration:', modelViewer.duration);
+            // After loading, ensure the slider is initialized to the start of the animation
+            modelViewer.currentTime = 0;
+            slider.value = 0;
+        });
+
+        // Loop the animation if the animation starts and ends closed.
+        // This makes the slider control seamless.
+        modelViewer.loop = true; 
+
+        // If your animation starts and ends in the "closed" state,
+        // then a value of 0 on the slider will be closed, and 1 will be closed,
+        // with the window fully open somewhere in between.
+        // The current implementation maps 0 to the start and 1 to the end.
+        // If your animation is like "closed -> open -> closed", then the slider
+        // will progress through that whole cycle.
+    </script>
+</body>
+</html>
