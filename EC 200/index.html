@@ -1,238 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="description" content="Animated Window Viewer">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Animated Window Viewer</title>
-    <!-- Combined styles for simplicity -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC 200 3D Model</title>
+    <!-- Model Viewer Library -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0; /* Light grey background */
-            color: #333; /* Darker text for readability */
-        }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 2em;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars if content is larger than iframe */
+            height: 100vh; /* Make body take full height of the viewport */
+            width: 100vw; /* Make body take full width of the viewport */
         }
         model-viewer {
-            width: 600px;
-            height: 600px;
-            background-color: #fff; /* White background for the viewer area */
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Stronger shadow */
-            
-            /* Custom styling for model-viewer's internal elements */
-            --mv-progress-bar-color: #4CAF50; /* Green progress bar */
-            --mv-progress-bar-height: 5px;
-            --mv-progress-bar-border-radius: 5px;
-        }
-        .controls {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%; /* Take full width for centering */
-        }
-        input[type="range"] {
-            width: 500px;
-            margin-bottom: 15px;
-            -webkit-appearance: none; /* Remove default browser styling */
-            appearance: none;
-            height: 8px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
-            border-radius: 5px;
-        }
-        input[type="range"]:hover {
-            opacity: 1;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50; /* Green thumb */
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        label {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        /* Styles for AR button and prompt - based on typical model-viewer output */
-        #ar-button {
-            background-image: url("ar_icon.png"); /* Assuming ar_icon.png is in the same folder */
-            background-repeat: no-repeat;
-            background-size: 20px 20px;
-            background-position: 12px 50%;
-            background-color: #fff;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 16px;
-            padding: 0px 16px 0px 40px;
-            font-family: Roboto, sans-serif;
-            font-size: 14px;
-            color: #4285f4;
-            height: 36px;
-            line-height: 36px;
-            border-radius: 18px;
-            border: 1px solid #DADCE0;
-            cursor: pointer; /* Indicate it's clickable */
-        }
-        #ar-button:hover {
-            background-color: #F8F9FA;
-        }
-        #ar-button:active {
-            background-color: #E8EAED;
-        }
-        #ar-button:focus {
-            outline: none;
-        }
-        #ar-button:focus-visible {
-            outline: 1px solid #4285f4;
-        }
-        #ar-prompt {
-            position: absolute;
-            left: 50%;
-            bottom: 56px;
-            transform: translateX(-50%);
-            z-index: 1;
-            white-space: nowrap;
-            border-radius: 4px;
-            padding: 6px 8px 6px 8px;
-            background-color: #303030;
-            color: #fff;
-            font-family: Roboto, sans-serif;
-            font-size: 14px;
-            min-width: 120px;
-            text-align: center;
-        }
-        #ar-prompt.hide {
-            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
         }
     </style>
 </head>
 <body>
-    <h1>Animated Window Viewer</h1>
-
     <model-viewer
-        id="animatedWindow"
-        src="EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.fbx.glb" <!-- CORRECTED: Removed "EC%20100%20Britany/" -->
-        alt="Animated Window"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        tone-mapping="neutral"
-        poster="poster.webp" 
-        shadow-intensity="1"
-        environment-image="360_F_461418106_G1428F5omNT1lWSECBWVMN6pNzdnNJAg.jpg" 
-        skybox-color="#FFFFFF" 
-        exposure="2" 
-        animation-name="Take 001" 
-        orientation="0 0 0" 
-        field-of-view="30deg" 
-        camera-orbit="27.61deg 86.84deg 2.14m" 
-        camera-target="0.00m 1.00m -0.01m" 
-        autoplay="false" 
-        loop="true" 
-    >
-        <!-- AR button slot - assuming ar_icon.png and ar_hand_prompt.png are in the same folder -->
-        <button slot="ar-button" id="ar-button">
-            View in your space
-        </button>
-        <div id="ar-prompt" class="hide"> <!-- Initially hide AR prompt -->
-            <img src="ar_hand_prompt.png">
-        </div>
-    </model-viewer>  
-
-    <div class="controls">
-        <label for="animation-slider">Open-Close</label>
-        <input type="range" id="animation-slider" min="0" max="1" value="0" step="any">
-    </div>
-
-    <!-- Loads <model-viewer> for browsers: -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    
-    <script>
-        const modelViewer = document.getElementById('animatedWindow');
-        const slider = document.getElementById('animation-slider');
-        const arButton = document.getElementById('ar-button');
-        const arPrompt = document.getElementById('ar-prompt');
-
-        // Initial setup
-        modelViewer.autoplay = false;
-        modelViewer.currentTime = 0; // Ensure it starts at the beginning (closed)
-
-        // Event listener for the slider
-        slider.addEventListener('input', () => {
-            if (modelViewer.duration) {
-                modelViewer.currentTime = slider.value * modelViewer.duration;
-            } else {
-                console.warn("modelViewer.duration is not yet available for slider control. Ensure an animation is loaded.");
-            }
-        });
-
-        // Event listener for model loading
-        modelViewer.addEventListener('load', () => {
-            console.log('Model loaded.');
-            console.log('All available animations:', modelViewer.availableAnimations); 
-            console.log('Active animation name:', modelViewer.animationName); 
-
-            if (modelViewer.duration) {
-                console.log('Model duration for active animation:', modelViewer.duration);
-                modelViewer.currentTime = 0; 
-                slider.value = 0; 
-            } else {
-                console.error("Animation loaded but has a duration of 0. Please verify the animation in your 3D software and re-export the GLB.");
-            }
-        });
-
-        // AR button functionality (from typical model-viewer script.js)
-        if (arButton) {
-            arButton.addEventListener('click', () => {
-                modelViewer.activateAR();
-            });
-        }
-        
-        // AR prompt functionality (from typical model-viewer script.js)
-        modelViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-                arPrompt.classList.add('hide');
-            }
-        });
-        modelViewer.addEventListener('quick-look-button-tapped', () => {
-            arPrompt.classList.add('hide');
-        });
-
-        // Show prompt if AR is available
-        modelViewer.addEventListener('data-ready', () => {
-            if (modelViewer.canActivateAR) {
-                arPrompt.classList.remove('hide');
-            }
-        });
-    </script>
+      src="EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.glb"
+      alt="EC 200 White Colonial Grid Window"
+      ar
+      auto-rotate
+      camera-controls
+      shadow-intensity="1"
+      exposure="1">
+    </model-viewer>
 </body>
 </html>
