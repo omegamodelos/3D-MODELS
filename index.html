@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC 200 3D Model</title>
+    <!-- Model Viewer Library -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars if content is larger than iframe */
+            height: 100vh; /* Make body take full height of the viewport */
+            width: 100vw; /* Make body take full width of the viewport */
+        }
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <model-viewer
+      src="EC%20200%20WHITE%20Colonial%20Grid%20ANIMATED.glb"
+      alt="EC 200 White Colonial Grid Window"
+      ar
+      auto-rotate
+      camera-controls
+      shadow-intensity="1"
+      exposure="1">
+    </model-viewer>
+</body>
+</html>
